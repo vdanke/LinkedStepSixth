@@ -1,31 +1,33 @@
 package org.step.linked.step.controllers;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.step.linked.step.model.User;
+import org.step.linked.step.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
-    private static final List<User> USER_DB;
-
-    static {
-        USER_DB = new ArrayList<>();
-        USER_DB.add(new User("abc", "foo@mail.ru", "password"));
-        USER_DB.add(new User("cda", "bar@mail.ru", "password"));
-        USER_DB.add(new User("bdc", "top@mail.ru", "password"));
-    }
+    private final UserService userService;
 
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public List<User> getAllUsers() {
-        return USER_DB;
+        return userService.findAll();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable(name = "id") String id) {
+        log.info("Update");
+        return ResponseEntity.ok().build();
     }
 }

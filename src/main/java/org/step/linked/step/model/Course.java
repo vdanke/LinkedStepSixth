@@ -1,31 +1,20 @@
 package org.step.linked.step.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Document(value = "course")
 public class Course {
 
+    @MongoId
     private String id;
     private String description;
-
-    public Course() {
-    }
-
-    public Course(String id, String description) {
-        this.id = id;
-        this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

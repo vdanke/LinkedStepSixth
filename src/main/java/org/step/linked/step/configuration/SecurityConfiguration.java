@@ -1,33 +1,36 @@
 package org.step.linked.step.configuration;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.step.linked.step.model.Authorities;
+import org.step.linked.step.service.impl.UserServiceImpl;
 
 import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private final UserServiceImpl userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .inMemoryAuthentication()
-                .passwordEncoder(NoOpPasswordEncoder.getInstance())
-                .withUser("foo@mail.ru").password("password").authorities(Authorities.ROLE_USER.name())
-                .and()
-                .withUser("bar@mail.ru").password("password").authorities(Authorities.ROLE_USER.name())
-                .and()
-                .withUser("author@mail.ru").password("password").authorities(Authorities.ROLE_AUTHOR.name())
-                .and()
-                .withUser("admin@mail.ru").password("password").authorities(Authorities.ROLE_ADMIN.name());
+                .userDetailsService(userService)
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -47,6 +50,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin()
+                .disable()
+                .logout()
                 .and()
                 .csrf().disable()
                 .cors(httpSecurityCorsConfigurer -> {
@@ -63,5 +68,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                    corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:5050", "https://google.com", "https://github.com", "http://178.0.1.19:80"));
 //                    corsConfiguration.setAllowedOriginPatterns(Arrays.asList("http://users.*.kz"))
                 });
+    }
+
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    @SneakyThrows
+    public AuthenticationManager authenticationManagerBean() {
+        return super.authenticationManagerBean();
     }
 }

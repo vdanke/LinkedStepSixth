@@ -1,5 +1,6 @@
 package org.step.linked.step.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,37 +9,26 @@ import org.step.linked.step.dto.request.CourseSaveRequest;
 import org.step.linked.step.dto.request.CourseUpdateRequest;
 import org.step.linked.step.dto.response.CourseSaveResponse;
 import org.step.linked.step.dto.response.CourseUpdateResponse;
-import org.step.linked.step.exception.NotFoundException;
 import org.step.linked.step.model.Course;
+import org.step.linked.step.service.CourseService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/courses")
+@RequiredArgsConstructor
 public class CourseController {
 
-    private static final List<Course> COURSE_DB;
-
-    static {
-        COURSE_DB = new ArrayList<>();
-        COURSE_DB.add(new Course("abc", "good course"));
-        COURSE_DB.add(new Course("cda", "new course"));
-        COURSE_DB.add(new Course("bdc", "worst course"));
-    }
+    private final CourseService courseService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(COURSE_DB);
+        return ResponseEntity.ok(courseService.findAll());
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Course> getCourseById(@PathVariable(name = "id") String id) {
-        return ResponseEntity.ok(COURSE_DB.stream()
-                .filter(c -> c.getId().equals(id))
-                .findAny()
-                .orElseThrow(() -> new NotFoundException(String.format("Course with ID %s not found", id)))
-        );
+        return null;
     }
 
     @PutMapping(
