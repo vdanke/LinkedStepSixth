@@ -2,6 +2,7 @@ package org.step.linked.step.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,9 +12,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.step.linked.step.configuration.filter.AuthenticationFilter;
+import org.step.linked.step.configuration.filter.AuthorizationFilter;
 import org.step.linked.step.model.Authorities;
+import org.step.linked.step.model.User;
+import org.step.linked.step.service.JwtService;
+import org.step.linked.step.service.SerializationDeserializationService;
 import org.step.linked.step.service.impl.UserServiceImpl;
 
 import java.util.Collections;
@@ -25,6 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserServiceImpl userService;
     private final PasswordEncoder passwordEncoder;
+    private final SerializationDeserializationService<User, String> serializationDeserializationService;
+    private final JwtService jwtService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -49,6 +60,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .formLogin()
                 .disable()
                 .logout()
@@ -67,7 +80,26 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                    corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE"));
 //                    corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:5050", "https://google.com", "https://github.com", "http://178.0.1.19:80"));
 //                    corsConfiguration.setAllowedOriginPatterns(Arrays.asList("http://users.*.kz"))
-                });
+                })
+                .addFilter(customAuthenticationFilter())
+                .addFilter(customAuthorizationFilter());
+    }
+    
+    @Bean
+    public UsernamePasswordAuthenticationFilter customAuthenticationFilter() throws Exception {
+        UsernamePasswordAuthenticationFilter authFilter = new AuthenticationFilter(
+                serializationDeserializationService, userService, jwtService
+        );
+        authFilter.setAuthenticationManager(super.authenticationManager());
+        authFilter.setFilterProcessesUrl("/auth/login/filter");
+        return authFilter;
+    }
+
+    @Bean
+    public BasicAuthenticationFilter customAuthorizationFilter() throws Exception {
+        return new AuthorizationFilter(
+                super.authenticationManager(), jwtService
+        );
     }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)

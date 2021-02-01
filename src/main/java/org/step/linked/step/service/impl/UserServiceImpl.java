@@ -31,6 +31,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
+    }
+
+    @Override
     public User save(User user) {
         user.setAuthoritiesList(Collections.singleton(Authorities.ROLE_USER));
         user.setId(UUID.randomUUID().toString());

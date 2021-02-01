@@ -1,5 +1,6 @@
 package org.step.linked.step.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -20,6 +21,7 @@ public class ResponseFailed {
     public ResponseFailed() {
     }
 
+    @JsonCreator
     public ResponseFailed(String path, String method, String message, LocalDateTime localDateTime) {
         this.path = path;
         this.method = method;

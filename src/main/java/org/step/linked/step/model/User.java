@@ -1,5 +1,6 @@
 package org.step.linked.step.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,7 +27,9 @@ public class User {
     @MongoId
     private String id;
     @Indexed(unique = true)
+    @JsonProperty("username")
     private String username;
+    @JsonProperty("password")
     private String password;
     private Set<Authorities> authoritiesList = new HashSet<>();
 }

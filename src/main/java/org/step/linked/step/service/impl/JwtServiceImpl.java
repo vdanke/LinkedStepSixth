@@ -6,10 +6,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.step.linked.step.model.User;
 import org.step.linked.step.service.JwtService;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -18,6 +20,9 @@ import java.util.HashMap;
 public class JwtServiceImpl implements JwtService {
 
     private final ObjectMapper objectMapper;
+
+    @Value("${token.secret}")
+    private String tokenSecret;
 
     @Override
     @SneakyThrows
@@ -37,17 +42,30 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getUsername())
                 .setIssuedAt(creationDate)
                 .setExpiration(expirationDate)
-                .signWith(Keys.hmacShaKeyFor("verysecdskajndkwbdiahuwiundhxiwuhqduixgnwquydgiqwuhnxdiuretkey".getBytes()))
+                .signWith(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
                 .compact();
     }
 
     @Override
     public Boolean validateToken(String token) {
-        return null;
+        return extractTokenClaims(token)
+                .getExpiration()
+                .after(new Date());
     }
 
     @Override
     public Claims extractTokenClaims(String token) {
-        return null;
+        String secret = Base64.getEncoder().encodeToString(tokenSecret.getBytes());
+
+        return Jwts.parserBuilder()
+                .setSigningKey(secret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    @Override
+    public String extractSubject(String token) {
+        return this.extractTokenClaims(token).getSubject();
     }
 }

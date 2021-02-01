@@ -10,4 +10,6 @@ public interface JwtService {
     Boolean validateToken(String token);
 
     Claims extractTokenClaims(String token);
+
+    String extractSubject(String token);
 }

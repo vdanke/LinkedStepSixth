@@ -21,6 +21,7 @@ import org.step.linked.step.model.UserDetailsImpl;
 import org.step.linked.step.service.JwtService;
 import org.step.linked.step.service.UserService;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 
 @RestController
@@ -53,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<UserRegistrationResponse> registration(@RequestBody UserRegistrationRequest request) {
+    public ResponseEntity<UserRegistrationResponse> registration(@Valid @RequestBody UserRegistrationRequest request) {
         log.info(String.format("Registration request {username:%s,time:%s}", request.getUsername(), LocalDateTime.now().toString()));
         User user = User.builder().username(request.getUsername()).password(request.getPassword()).build();
         User savedUser = userService.save(user);
