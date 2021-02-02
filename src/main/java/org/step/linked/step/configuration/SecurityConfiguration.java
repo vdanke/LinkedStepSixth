@@ -57,6 +57,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/users/*").hasAnyAuthority(
                     Authorities.ROLE_USER.name(), Authorities.ROLE_AUTHOR.name(), Authorities.ROLE_ADMIN.name()
                 )
+                .antMatchers("/notifications/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

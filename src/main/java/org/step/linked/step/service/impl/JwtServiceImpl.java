@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.step.linked.step.configuration.AppConfigProperties;
 import org.step.linked.step.model.User;
 import org.step.linked.step.service.JwtService;
 
@@ -20,9 +21,7 @@ import java.util.HashMap;
 public class JwtServiceImpl implements JwtService {
 
     private final ObjectMapper objectMapper;
-
-    @Value("${token.secret}")
-    private String tokenSecret;
+    private final AppConfigProperties properties;
 
     @Override
     @SneakyThrows
@@ -34,7 +33,7 @@ public class JwtServiceImpl implements JwtService {
         claimsMap.put("user", jsonUser);
 
         Date creationDate = new Date();
-        Date expirationDate = new Date(creationDate.getTime() + 8600 * 1000);
+        Date expirationDate = new Date(creationDate.getTime() + properties.getToken().getExpiration());
 
         return Jwts
                 .builder()
@@ -42,7 +41,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getUsername())
                 .setIssuedAt(creationDate)
                 .setExpiration(expirationDate)
-                .signWith(Keys.hmacShaKeyFor(tokenSecret.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(properties.getToken().getSecret().getBytes()))
                 .compact();
     }
 
@@ -55,7 +54,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public Claims extractTokenClaims(String token) {
-        String secret = Base64.getEncoder().encodeToString(tokenSecret.getBytes());
+        String secret = Base64.getEncoder().encodeToString(properties.getToken().getSecret().getBytes());
 
         return Jwts.parserBuilder()
                 .setSigningKey(secret)
