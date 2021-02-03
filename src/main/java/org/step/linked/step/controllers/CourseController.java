@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.step.linked.step.dto.request.CourseSaveRequest;
 import org.step.linked.step.dto.request.CourseUpdateRequest;
@@ -31,6 +33,8 @@ public class CourseController {
         return null;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_AUTHOR','ROLE_ADMIN')")
+//    @PostAuthorize("#{principal.accountNonExpired == true}")
     @PutMapping(
             value = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE,
@@ -43,6 +47,8 @@ public class CourseController {
         return ResponseEntity.ok(new CourseUpdateResponse());
     }
 
+//    @PreAuthorize("#{#principal.username == 'gop@mail.ru'}")
+    @PreAuthorize("hasAnyRole('ROLE_AUTHOR','ROLE_ADMIN')")
     @PostMapping(
             value = "/courses",
             consumes = MediaType.APPLICATION_JSON_VALUE,

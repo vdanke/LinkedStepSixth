@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.step.linked.step.configuration.security.assets.AllowAll;
 import org.step.linked.step.dto.UserDTO;
 import org.step.linked.step.service.UserService;
 
@@ -15,10 +17,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
+//@RolesAllowed({"ROLE_ADMIN", "ROLE_USER", "ROLE_AUTHOR"})
+@AllowAll
 public class UserController {
 
     private final UserService userService;
 
+    @Secured("ROLE_ADMIN")
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE
     )

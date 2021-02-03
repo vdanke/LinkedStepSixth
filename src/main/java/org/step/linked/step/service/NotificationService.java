@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface NotificationService {
 
-    void sendNotification(String text);
+    void sendNotification();
 
-    CompletableFuture<String> sendNotificationAsync(String text);
+    CompletableFuture<Void> sendNotificationAsync(String text);
 }

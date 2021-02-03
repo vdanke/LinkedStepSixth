@@ -1,4 +1,4 @@
-package org.step.linked.step.configuration.filter;
+package org.step.linked.step.configuration.security.filter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -8,8 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
-import org.step.linked.step.model.Authorities;
 import org.step.linked.step.model.User;
 import org.step.linked.step.service.JwtService;
 import org.step.linked.step.service.SerializationDeserializationService;
@@ -20,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -54,11 +51,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtService.createToken(userByUsername);
 
         response.setHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
-        response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "ROLES");
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-        response.setHeader("Roles", userByUsername
-                .getAuthoritiesList().stream().map(Authorities::name).collect(Collectors.joining(","))
-        );
     }
 
     @Override

@@ -9,12 +9,14 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.step.linked.step.configuration.AppConfigProperties;
+import org.step.linked.step.model.Authorities;
 import org.step.linked.step.model.User;
 import org.step.linked.step.service.JwtService;
 
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class JwtServiceImpl implements JwtService {
         String jsonUser = objectMapper.writeValueAsString(user);
 
         claimsMap.put("user", jsonUser);
+        claimsMap.put("roles", user.getAuthoritiesList().stream().map(Authorities::name).collect(Collectors.joining(",")));
 
         Date creationDate = new Date();
         Date expirationDate = new Date(creationDate.getTime() + properties.getToken().getExpiration());

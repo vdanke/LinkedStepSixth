@@ -13,9 +13,8 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping("/async")
-    public ResponseEntity<?> sendNotificationAsync(@RequestBody String message) {
-        notificationService.sendNotificationAsync(message)
-                .thenAccept(System.out::println);
+    public ResponseEntity<?> sendNotificationAsync(@RequestBody String email) {
+        notificationService.sendNotificationAsync(email);
         return ResponseEntity.ok().build();
     }
 }

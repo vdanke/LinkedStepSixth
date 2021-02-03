@@ -19,9 +19,9 @@ public class SchedulerComponent {
     cron - 0 0 9-17 * * 5-7
      */
     @Async("notificationExecutor")
-    @Scheduled(cron = "*/1 * * * * *")
+    @Scheduled(cron = "0 0 17 * * 5")
     public void sendNotification() {
-        System.out.println("Scheduler: " + Thread.currentThread().getName());
-        notificationService.sendNotification("some text");
+        System.out.println("Send promotion");
+        notificationService.sendNotification();
     }
 }

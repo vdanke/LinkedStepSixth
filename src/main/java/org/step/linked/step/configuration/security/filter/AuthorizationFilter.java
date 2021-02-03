@@ -1,4 +1,4 @@
-package org.step.linked.step.configuration.filter;
+package org.step.linked.step.configuration.security.filter;
 
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpHeaders;
@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -59,7 +57,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             response.getWriter().write(responseFailedJson);
             return;
         }
-        String roles = request.getHeader("ROLES");
+        String roles = jwtService.extractTokenClaims(authToken).get("roles", String.class);
         if (roles == null || roles.isBlank()) {
             chain.doFilter(request, response);
             return;
