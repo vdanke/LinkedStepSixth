@@ -21,9 +21,7 @@ public class AsyncConfiguration {
         executor.setMaxPoolSize(8);
         executor.setQueueCapacity(100);
         executor.setKeepAliveSeconds(120);
-        executor.setRejectedExecutionHandler((r, executor1) -> {
-
-        });
+        executor.setRejectedExecutionHandler((r, executor1) -> {});
         executor.setAwaitTerminationSeconds(10);
         executor.setThreadNamePrefix("NotificationExecutor~");
         return executor;
