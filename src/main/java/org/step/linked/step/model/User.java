@@ -32,4 +32,9 @@ public class User {
     @JsonProperty("password")
     private String password;
     private Set<Authorities> authoritiesList = new HashSet<>();
+    private Set<String> providers = new HashSet<>();
+    private String gender;
+    private String fullName;
+    private String locale;
+    private String imageUrl;
 }

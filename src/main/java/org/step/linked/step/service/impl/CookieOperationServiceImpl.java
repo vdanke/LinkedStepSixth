@@ -21,6 +21,7 @@ public class CookieOperationServiceImpl implements CookieOperationService {
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 

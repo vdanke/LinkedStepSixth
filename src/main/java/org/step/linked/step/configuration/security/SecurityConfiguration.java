@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -21,6 +22,8 @@ import org.step.linked.step.configuration.security.filter.AuthenticationFilter;
 import org.step.linked.step.configuration.security.filter.AuthorizationFilter;
 import org.step.linked.step.configuration.security.handlers.OAuth2FailureHandler;
 import org.step.linked.step.configuration.security.handlers.OAuth2SuccessHandler;
+import org.step.linked.step.configuration.security.handlers.RestAuthenticationEntryPoint;
+import org.step.linked.step.configuration.security.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import org.step.linked.step.model.User;
 import org.step.linked.step.service.JwtService;
 import org.step.linked.step.service.SerializationDeserializationService;
@@ -51,6 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JwtService jwtService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final HttpCookieOAuth2AuthorizationRequestRepository requestRepository;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -77,6 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .oauth2Login()
                 .authorizationEndpoint()
+                .authorizationRequestRepository(requestRepository)
                 .baseUri(OAUTH2_AUTHORIZATION_ENDPOINT)
                 .and()
                 .redirectionEndpoint()
@@ -84,6 +90,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .successHandler(oAuth2SuccessHandler)
                 .failureHandler(oAuth2FailureHandler)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and()
                 .csrf().disable()
                 .cors(httpSecurityCorsConfigurer -> {
