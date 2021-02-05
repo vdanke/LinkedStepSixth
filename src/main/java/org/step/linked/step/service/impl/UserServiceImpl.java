@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.step.linked.step.exception.NotFoundException;
 import org.step.linked.step.model.Authorities;
 import org.step.linked.step.model.User;
 import org.step.linked.step.model.UserDetailsImpl;
@@ -22,6 +23,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepositoryImpl userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public User findById(String id) {
+        return userRepository.findById(id).orElseThrow(NotFoundException::new);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

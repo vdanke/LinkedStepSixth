@@ -6,8 +6,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.step.linked.step.configuration.security.assets.AllowAdmin;
 import org.step.linked.step.configuration.security.assets.AllowAll;
 import org.step.linked.step.dto.UserDTO;
+import org.step.linked.step.model.User;
 import org.step.linked.step.service.UserService;
 
 import java.util.List;
@@ -30,6 +32,15 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> dtos = userService.findAll().stream().map(UserDTO::toUserDTO).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
+    }
+
+    @AllowAdmin
+    @GetMapping(
+            value = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<User> findById(@PathVariable(name = "id") String id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @PutMapping("/{id}")
